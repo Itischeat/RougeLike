@@ -1,6 +1,7 @@
 
 let fil = document.querySelector('.field');
 
+
 let n = 40, m = 24;
 let mas = [];
 
@@ -98,6 +99,10 @@ function setHero(x, y) {
     div.style.left = 50 * x + 'px'
     div.style.top = 50 * y + 'px'
     fil.append(div)
+    let health = document.createElement('div')
+    health.className = 'health'
+    health.style.width = 100 + '%'
+    div.append(health)
     mas[y][x] = 5
 }
 
@@ -113,22 +118,112 @@ function setEnemy(x, y) {
     div.append(health)
     mas[y][x] = 6
 }
-let hero = document.querySelector('.tileP')
+
+
+const hero = document.querySelector('.tileP')
+let enemy = document.querySelectorAll('.tileE')
+let Ehealth = document.querySelectorAll('.tile .health')
+
+let e_health = document.querySelectorAll('.tileE .health')
+
 document.addEventListener('keydown', (event) => {
+    let hx = hero.style.left = parseInt(hero.style.left) / 50
+    let hy = hero.style.top = parseInt(hero.style.top) / 50
     switch (event.code) {
         case "KeyW":
-            hero.style.top = parseInt(hero.style.top) - 50 + 'px'
+            if (mas[hy - 1][hx] !== 1) {
+                return
+            }
+            mas[hy][hx] = 1
+            mas[hy - 1][hx] = 5
+            hero.style.top = (hy - 1) * 50 + 'px'
             break;
         case "KeyA":
-            hero.style.left = parseInt(hero.style.left) - 50 + 'px'
+            if (mas[hy][hx - 1] !== 1) {
+                return
+            }
+            mas[hy][hx] = 1
+            mas[hy][hx - 1] = 5
+            hero.style.left = (hx - 1) * 50 + 'px'
             break;
         case "KeyS":
-            hero.style.top = parseInt(hero.style.top) + 50 + 'px'
+            if (mas[hy + 1][hx] !== 1) {
+                return
+            }
+            mas[hy][hx] = 1
+            mas[hy + 1][hx] = 5
+            hero.style.top = (hy + 1) * 50 + 'px'
             break;
         case "KeyD":
-            hero.style.left = parseInt(hero.style.left) + 50 + 'px'
+            if (mas[hy][hx + 1] !== 1) {
+                return
+            }
+            mas[hy][hx] = 1
+            mas[hy][hx + 1] = 5
+            hero.style.left = (hx + 1) * 50 + 'px'
             break;
-        default:
-            break;
+        case "Space":
+            findEnemy(hy, hx)
     }
 })
+
+
+
+setInterval(() => {
+    enemy.forEach((elem) => {
+        let ex = parseInt(elem.style.left) / 50
+        let ey = parseInt(elem.style.top) / 50
+        
+        setInterval(() => {
+            let direction = Math.floor(Math.random() * 4)
+            switch (direction) {
+                case 1:
+                    mas[ey][ex] = 1
+                    if (mas[ey - 1][ex] !== 1) {
+                        break;
+                    }
+                    mas[ey - 1][ex] = 6
+                    elem.style.top = (ey - 1) * 50 + 'px'
+                    break;
+                case 2:
+                    mas[ey][ex] = 1
+                    if (mas[ey][ex - 1] !== 1) {
+                        break;
+                    }
+                    mas[ey][ex - 1] = 6
+                    elem.style.left = (ex - 1) * 50 + 'px'
+                    break;
+                case 3:
+                    mas[ey][ex] = 1
+                    if (mas[ey + 1][ex] !== 1) {
+                        break;
+                    }
+                    mas[ey + 1][ex] = 6
+                    elem.style.top = (ey + 1) * 50 + 'px'
+                    break;
+                case 4:
+                    mas[ey][ex] = 1
+                    if (mas[ey][ex + 1] !== 1) {
+                        break;
+                    }
+                    mas[ey][ex + 1] = 6
+                    elem.style.left = (ex + 1) * 50 + 'px'
+                    break;
+                default:
+                    break;
+            }
+        }, 3000)
+    })
+}, 3000)
+
+
+function findEnemy(x, y) {
+    let e_aria = (mas[x-1][y-1] === 6 || mas[x-1][y] === 6 || mas[x-1][y+1] === 6 || mas[x][y-1] === 6 || mas[x][y+1] === 6 || mas[x+1][y-1] === 6 || mas[x+1][y] === 6 || mas[x+1][y+1] === 6)
+    if (e_aria) {
+        console.log('Find!!!')
+    } else {
+        Ehealth.forEach(e => {
+            e.style.width = parseInt(e.style.width) - 50 + '%'
+        })
+    }
+}
